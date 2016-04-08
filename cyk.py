@@ -1,8 +1,5 @@
 #!/usr/bin/python
 
-from collections import OrderedDict
-import itertools
-
 def read_grammar(_grammar_file):
     gm = open(_grammar_file).read().split('\n')[:-1]
     grammar = {}
@@ -10,62 +7,54 @@ def read_grammar(_grammar_file):
         terms = line.split('->')
         left = terms[0].strip()
 
-        # rules should be a non-terminal followed by an arrow
-        # catch if this is not the case
-        try:
-            len(terms) == 2
-        except:
-            print("error in input grammar file")
-            raise SystemExit
-
         # separate rules with an '|'
         if len(terms[1].split('|')) > 1:
             right = [[t.strip()] for t in terms[1].split('|')]
         else:
             right = [[t.strip() for t in terms[1].split()]]
 
-        try:
+        if left in grammar:
             old_right = grammar[left]
             right += old_right
-        except:
-            pass
         grammar[left] = right
 
     return grammar
 
-def parse_tree(_grammar, _string):
-    strlen = len(_string.split())
+def search_tree(_grammar, _string):
+    _string = _string.split()
+    strlen = len(_string)
 
-    try:
-        strlen >= 2
-    except:
-        print("error: input string must be at least 2 words long")
-        raise SystemExit
+    # build tree data structure and backtrace data structure
+    tree = [[] for _ in range(strlen)]
+    back = [[] for _ in range(strlen)]
+    for n in range(strlen):
+        tree[strlen-1-n] = [[] for _ in range(n+1)]
+        back[strlen-1-n] = [{} for _ in range(n+1)]
 
-    back = [[[]*len(_grammar.keys())]*strlen]*strlen
+    # basis: fill first layer of tree
+    for n_word in range(strlen):
+        tree[0][n_word] = search_gram(_grammar, _string[n_word])
 
-    string_nt = OrderedDict()
-    for word in _string.split():
-        string_nt[word] = search_gram(_grammar, word)
+    for n_depth in range(1, len(tree)):
+        for n_node in range(len(tree[n_depth])):
+            for n_split in range(n_depth):
+                [tree[n_depth][n_node].extend(search_gram(_grammar, t1, t2)) for t1 in tree[n_split][n_node] for t2 in tree[n_depth-n_split-1][n_node+n_split+1]]
 
-    print(string_nt)
-
-    for span in range(2, strlen):
-        for begin in range(strlen - span):
-            end = span + begin
-            for split in range(begin+1, end-1):
-                for nt, rules in _grammar.iteritems():
-                    continue
-                    
-        word = _string[span]
+    return tree
 
 def search_gram(_grammar, _term1, _term2=None):
     term_nt = []
+    prev_nt = {}
     for nt, rules in _grammar.iteritems():
         for rule in rules:
-            if nt not in term_nt and ((len(rule) == 1 and _term1 in rule and not _term2) or (len(rule) == 2 and _term1 in rule and _term2 in rule)):
+            if ((len(rule) == 1 and _term1 in rule and not _term2) or (len(rule) == 2 and _term1 in rule and _term2 in rule)):
                 term_nt.append(nt)
+                try:
+                    prev_prev_nt = prev_nt[nt]
+
                 term_nt.extend(search_gram(_grammar, nt))
 
     return term_nt
 
+def build_tree(_grammar, _tree):
+    pass
