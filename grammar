@@ -1,0 +1,17 @@
+s -> npvp
+s -> aux npvp
+s -> vp
+npvp -> np vp
+np -> det nominal
+nominal -> noun
+nominal -> noun nominal
+nominal -> nominal pp
+np -> propernoun
+vp -> verb
+vp -> verb np
+det -> that | this | a
+noun -> book | flight | meal | money
+verb -> book | include | prefer
+aux -> does
+prep -> from | to | on
+propernoun -> Houston | TWA
