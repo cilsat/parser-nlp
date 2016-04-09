@@ -1,5 +1,14 @@
 #!/usr/bin/python
 
+"""
+Reads grammar files.
+Expects a list of non-terminals on the left separated by arrows
+-> with terminal(s)/non-terminal(s) on the right. Production
+rules are expected to be in chomksy normal form. Rules can be 
+combined with an 'or' ('|') sign.
+Returns a dictionary of grammars, with left side non-terminals
+as keys and lists of right sides as values.
+"""
 def read_grammar(_grammar_file):
     gm = open(_grammar_file).read().split('\n')[:-1]
     grammar = {}
@@ -20,6 +29,13 @@ def read_grammar(_grammar_file):
 
     return grammar
 
+"""
+CYK algorithm for CNF sentence parsing.
+Receives as input a parsed grammar and a string of words.
+Builds a chart of words and iterates through it in cubic time
+while saving backpointers to applied rules.
+Returns all possible parse trees of the given string.
+"""
 def search_tree(_grammar, _string):
     _string = _string.split()
     strlen = len(_string)
@@ -33,7 +49,9 @@ def search_tree(_grammar, _string):
 
     # basis: fill first layer of tree
     for n_word in range(strlen):
-        tree[0][n_word] = search_gram(_grammar, _string[n_word])
+        tree[0][n_word], back[0][n_word] = search_gram(_grammar, _string[n_word])
+
+    print(back)
 
     for n_depth in range(1, len(tree)):
         for n_node in range(len(tree[n_depth])):
@@ -42,6 +60,13 @@ def search_tree(_grammar, _string):
 
     return tree
 
+"""
+Recursive search subroutine to find rules in grammar.
+Receives the used grammar and the term(s) to search for. After
+a rule (left side) is found, recursively searches for the found
+non-terminal on the right side of rules.
+Returns all possible matches.
+"""
 def search_gram(_grammar, _term1, _term2=None):
     term_nt = []
     prev_nt = {}
@@ -49,12 +74,19 @@ def search_gram(_grammar, _term1, _term2=None):
         for rule in rules:
             if ((len(rule) == 1 and _term1 in rule and not _term2) or (len(rule) == 2 and _term1 in rule and _term2 in rule)):
                 term_nt.append(nt)
-                try:
-                    prev_prev_nt = prev_nt[nt]
+                tn, pn = search_gram(_grammar, nt)
+                term_nt.append(tn)
+                for key, val in prev_nt:
+                    if key in pn:
+                        old_rule = pn[key]
+                        val += old_rule
+                    prev_nt[key] = val
+                    if nt == key:
+                        old_rule = prev_nt[nt]
+                        rule += old_rule
+                    prev_nt[nt] = rule
 
-                term_nt.extend(search_gram(_grammar, nt))
-
-    return term_nt
+    return term_nt, prev_nt
 
 def build_tree(_grammar, _tree):
     pass
