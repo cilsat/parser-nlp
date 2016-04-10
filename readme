@@ -1,0 +1,233 @@
+usage: ./cyk.py [file.gram] [string]
+
+EXAMPLE
+Linux:
+    ./cyk.py caviar.gram 'papa ate the caviar with a spoon'
+Windows:
+    python cyk.py caviar.gram 'papa ate the caviar with a spoon'
+
+EXPECTED OUTPUT
+grammar :
+pp: ['p', 'np'] 
+det: ['the'] ['a'] 
+n: ['caviar'] ['spoon'] 
+vp: ['v', 'np'] ['vp', 'pp'] 
+p: ['with'] 
+s: ['np', 'vp'] 
+v: ['ate'] 
+np: ['papa'] ['np', 'pp'] ['det', 'n'] 
+
+string : papa ate the caviar with a spoon
+
+------------------------------
+tree 1
+------------------------------
+s
+   np
+      "papa"
+   vp
+      v
+         "ate"
+      np
+         np
+            det
+               "the"
+            n
+               "caviar"
+         pp
+            p
+               "with"
+            np
+               det
+                  "a"
+               n
+                  "spoon"
+------------------------------
+tree 2
+------------------------------
+s
+   np
+      "papa"
+   vp
+      vp
+         v
+            "ate"
+         np
+            det
+               "the"
+            n
+               "caviar"
+      pp
+         p
+            "with"
+         np
+            det
+               "a"
+            n
+               "spoon"
+
+EXAMPLE
+Linux:
+    ./cyk.py flight.gram 'i book a flight from Houston to TWA'
+Windows:
+    python cyk.py flight.gram 'i book a flight from Houston to TWA'
+
+EXPECTED OUTPUT
+grammar :
+propernoun: ['Houston'] ['TWA'] 
+pp: ['prep', 'np'] 
+noun: ['book'] ['flight'] ['meal'] ['money'] 
+pronoun: ['i'] ['she'] ['me'] 
+det: ['that'] ['this'] ['a'] 
+nppp: ['np', 'pp'] 
+vp: ['vp', 'pp'] ['verb', 'pp'] ['verb', 'nppp'] ['verb', 'np'] ['verb'] 
+s: ['vp'] ['aux', 'npvp'] ['npvp'] 
+nominal: ['nominal', 'pp'] ['nominal', 'noun'] ['noun'] 
+verb: ['book'] ['include'] ['prefer'] 
+np: ['det', 'nominal'] ['propernoun'] ['pronoun'] 
+aux: ['does'] 
+npvp: ['np', 'vp'] 
+prep: ['from'] ['to'] ['on'] 
+
+string : i book a flight from Houston to TWA
+
+------------------------------
+tree 1
+------------------------------
+s
+   np
+      "i"
+   vp
+      verb
+         "book"
+      np
+         det
+            "a"
+         nominal
+            nominal
+               nominal
+                  "flight"
+               pp
+                  prep
+                     "from"
+                  np
+                     "Houston"
+            pp
+               prep
+                  "to"
+               np
+                  "TWA"
+------------------------------
+tree 2
+------------------------------
+s
+   np
+      "i"
+   vp
+      verb
+         "book"
+      nppp
+         np
+            det
+               "a"
+            nominal
+               nominal
+                  "flight"
+               pp
+                  prep
+                     "from"
+                  np
+                     "Houston"
+         pp
+            prep
+               "to"
+            np
+               "TWA"
+------------------------------
+tree 3
+------------------------------
+s
+   np
+      "i"
+   vp
+      vp
+         verb
+            "book"
+         np
+            det
+               "a"
+            nominal
+               nominal
+                  "flight"
+               pp
+                  prep
+                     "from"
+                  np
+                     "Houston"
+      pp
+         prep
+            "to"
+         np
+            "TWA"
+------------------------------
+tree 4
+------------------------------
+s
+   np
+      "i"
+   vp
+      vp
+         verb
+            "book"
+         nppp
+            np
+               det
+                  "a"
+               nominal
+                  "flight"
+            pp
+               prep
+                  "from"
+               np
+                  "Houston"
+      pp
+         prep
+            "to"
+         np
+            "TWA"
+------------------------------
+tree 5
+------------------------------
+s
+   np
+      "i"
+   vp
+      vp
+         vp
+            verb
+               "book"
+            np
+               det
+                  "a"
+               nominal
+                  "flight"
+         pp
+            prep
+               "from"
+            np
+               "Houston"
+      pp
+         prep
+            "to"
+         np
+            "TWA"
+
+
+OTHER TEST STRINGS
+flight.gram:
+    'does this flight include a meal'
+    'book a flight'
+    'does she prefer me'
+caviar.gram:
+    'the caviar ate papa'
+    'the spoon ate the caviar'
