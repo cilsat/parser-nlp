@@ -1,0 +1,11 @@
+s -> np vp
+np -> det n
+np -> np pp
+vp -> vp pp
+vp -> v np
+pp -> p np
+np -> papa
+n -> caviar | spoon
+v -> ate
+det -> the | a
+p -> with
