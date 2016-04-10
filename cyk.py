@@ -104,40 +104,42 @@ def print_tree(_grammar, _t, _r, _b):
 
     def reverse_gram(_depth, _node, _n, _r_d):
         prev = _b[_depth][_node][_n]
-        base = _r[_depth][_node][_n]
 
         while len(prev) == 1:
+            base = _r[_depth][_node][_n]
             # recursion basis: a terminal is found
             if prev[0] == base:
                 for _ in range(_r_d): print('  '),
-                print('"' + base[0] + '"')
+                print('"'+base[0]+'"')
                 return
 
             _n -= 1
             prev = _b[_depth][_node][_n]
-            base = _r[_depth][_node][_n]
 
         for n_t, t in enumerate(prev):
             for _ in range(_r_d): print('  '),
-            p = base[n_t]
+            p = _r[_depth][_node][_n][n_t]
             print(p)
             idx = [i for i, j in enumerate(_t[t[0]][t[1]]) if j == p]
             reverse_gram(t[0], t[1], idx[0], _r_d+1)
             # after a duplicate is used, remove from charts
             if len(idx) > 1:
-                _t[t[0]][t[1]].pop(i)
-                _r[t[0]][t[1]].pop(i)
-                _b[t[0]][t[1]].pop(i)
+                _t[t[0]][t[1]].pop(idx[0])
+                _r[t[0]][t[1]].pop(idx[0])
+                _b[t[0]][t[1]].pop(idx[0])
 
-    no_match = True
+    n_tree = 0
     for n, t in enumerate(_t[-1][0]):
         if t == 's':
+            n_tree += 1
+            print('------------------------------')
+            print('tree ' + str(n_tree))
+            print('------------------------------')
             print('s')
             depth, node = len(_t)-1, 0
             reverse_gram(depth, node, n, 1)
-            no_match = False
 
-    if no_match:
+    if not n_tree:
         print('no parsed sentences')
 
 """
