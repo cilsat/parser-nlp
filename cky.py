@@ -38,7 +38,7 @@ def make_chart(_size):
     return chart
 
 """
-CYK algorithm for CNF sentence parsing.
+cky algorithm for CNF sentence parsing.
 Receives as input a parsed grammar and a string of words.
 Builds a chart of words and iterates through it in cubic time
 while saving backpointers to applied rules.
@@ -143,7 +143,7 @@ def print_tree(_grammar, _t, _r, _b):
         print('no parsed sentences')
 
 """
-Convenience function that combines some other functions.
+Convenience function that combines the other functions.
 Receives path to a grammar file and a string for evaluation.
 Prints parse tree to stdout and returns grammar, rules found
 (left side), rules used (right side), and backpointers.
